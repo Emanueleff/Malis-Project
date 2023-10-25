@@ -29,7 +29,9 @@ class KNN:
         INPUT :
         - X : is a 2D NxD numpy array containing the coordinates of points
         - y : is a 1D Nx1 numpy array containing the labels for the corrisponding row of X
-        '''        
+        '''   
+        self.X=X
+        self.y=y     
        
     def predict(self,X_new,p):
         '''
@@ -52,5 +54,15 @@ class KNN:
         OUTPUT :
         - dst : is an MxN numpy array containing the distance of each point in X_new to X
         '''
+
+        # X_new sono N validation (x1,x2)
+        # self.X sono i miei training 
+        # ( (X_new_1 - X_1) ^p + (X_new2 - X_2)^p ) ^ (1/p)
+
+        dst = ((X_new - self.X)**p)**(1/p)
+
+        # reshape( X_new, )
+
+        print(dst)
         
         return dst
