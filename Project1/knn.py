@@ -41,8 +41,45 @@ class KNN:
         OUTPUT :
         - y_hat : is a Mx1 numpy array containing the predicted labels for the X_new points
         ''' 
-            
+        distance_mat = self.minkowski_dist(X_new, p)
+        
+        newy = self.y.repeat(480, axis=0)[:, :, np.newaxis]
+        
+        X_labelled =  np.concatenate((distance_mat[:,:,np.newaxis], newy), axis=2)
+        
+        
+        #print(X_labelled.shape)
+        
+        
+        #X_labelled.sort(axis=1)
+        arr = X_labelled
+        idx = np.argsort(arr[...,0], axis=1)
+        arr1 = np.take_along_axis(arr, idx[...,None], axis=1)
+        
+        
+        
+        
+        #newy = self.y.repeat(480, axis=0)[:, :, np.newaxis]
+        #print(newy.shape)
 
+        #X_labelled =  np.concatenate((distance_mat[:,:,np.newaxis], newy), axis=2)
+
+        
+#        X_labelled[:,:,1] = self.y.repeat(480)
+
+        
+        
+        
+        #X_labelled.sort(axis=1)
+        res = arr1[:, 0:self.k,1]
+        #print(res)
+        #print(res.shape)
+        
+        y_hat = np.count_nonzero( res, axis=1 )
+        #print(y_hat.shape)
+        y_hat[ y_hat < self.k/2 ] = 0
+        y_hat[ y_hat > self.k/2 ] = 1
+        #print(y_hat)
         return y_hat
     
     def minkowski_dist(self,X_new,p):
@@ -59,10 +96,24 @@ class KNN:
         # self.X sono i miei training 
         # ( (X_new_1 - X_1) ^p + (X_new2 - X_2)^p ) ^ (1/p)
 
-        dst = ((X_new - self.X)**p)**(1/p)
+        #dst = ((X_new - self.X)**p)**(1/p)
 
         # reshape( X_new, )
-
-        print(dst)
         
+        X_3d = self.X[:, :, np.newaxis]
+    #    X_3d = np.reshape(X_3d, (1,2,2800) ) #hardcodato pazienza
+        #print(X_3d.shape)
+
+        X_new_3d =  np.transpose(X_new)[np.newaxis, :, :] #[X_new[:,0],X_new[0,:] np.newaxis]  #X_new.repeat(X.shape[0], axis=2)    
+        X_new_3d = X_new_3d.repeat( self.X.shape[0], axis=0 )
+        #print(X_new_3d.shape)
+
+
+        c = X_new_3d + X_3d
+        
+        dst =  (( (np.abs(X_new_3d - X_3d)**p).sum(axis=1) ) ** (1/p)).T
+        #print(mink)
+        #print(mink.shape)
+
+    
         return dst
