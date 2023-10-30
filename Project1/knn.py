@@ -42,44 +42,29 @@ class KNN:
         - y_hat : is a Mx1 numpy array containing the predicted labels for the X_new points
         ''' 
         distance_mat = self.minkowski_dist(X_new, p)
+
+        dist_ordered = np.argsort(distance_mat, axis=1)
+        res = dist_ordered[:, 0:self.k]
         
+        label = self.y[0,res[:]]
+        
+        y_hat = np.count_nonzero( label, axis=1 )
+        y_hat = np.where( y_hat < self.k/2 , 0, 1)
+        #y_hat[ y_hat < self.k/2 ] = 0
+        #y_hat[ y_hat > self.k/2 ] = 1
+
+        """        
         newy = self.y.repeat(480, axis=0)[:, :, np.newaxis]
-        
         X_labelled =  np.concatenate((distance_mat[:,:,np.newaxis], newy), axis=2)
-        
-        
-        #print(X_labelled.shape)
-        
-        
-        #X_labelled.sort(axis=1)
         arr = X_labelled
         idx = np.argsort(arr[...,0], axis=1)
         arr1 = np.take_along_axis(arr, idx[...,None], axis=1)
-        
-        
-        
-        
-        #newy = self.y.repeat(480, axis=0)[:, :, np.newaxis]
-        #print(newy.shape)
-
-        #X_labelled =  np.concatenate((distance_mat[:,:,np.newaxis], newy), axis=2)
-
-        
-#        X_labelled[:,:,1] = self.y.repeat(480)
-
-        
-        
-        
-        #X_labelled.sort(axis=1)
         res = arr1[:, 0:self.k,1]
-        #print(res)
-        #print(res.shape)
-        
         y_hat = np.count_nonzero( res, axis=1 )
-        #print(y_hat.shape)
         y_hat[ y_hat < self.k/2 ] = 0
         y_hat[ y_hat > self.k/2 ] = 1
-        #print(y_hat)
+        """
+    
         return y_hat
     
     def minkowski_dist(self,X_new,p):
