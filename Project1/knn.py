@@ -41,30 +41,21 @@ class KNN:
         OUTPUT :
         - y_hat : is a Mx1 numpy array containing the predicted labels for the X_new points
         ''' 
+        # Creating distance matrix
         distance_mat = self.minkowski_dist(X_new, p)
 
-        dist_ordered = np.argsort(distance_mat, axis=1)
+        # Sorting the distance matrix for the first k position
+        dist_ordered = np.argpartition(distance_mat, self.k, axis=1) 
+        # Take only the sorted part of the distance 
         res = dist_ordered[:, 0:self.k]
-        
+
+        # Take the label of the k-nearest neighbors
         label = self.y[0,res[:]]
         
+        # Counting the number of element != 0 and setting 0 / 1 if more than half of the votes are 1 / 0 
         y_hat = np.count_nonzero( label, axis=1 )
         y_hat = np.where( y_hat < self.k/2 , 0, 1)
-        #y_hat[ y_hat < self.k/2 ] = 0
-        #y_hat[ y_hat > self.k/2 ] = 1
-
-        """        
-        newy = self.y.repeat(480, axis=0)[:, :, np.newaxis]
-        X_labelled =  np.concatenate((distance_mat[:,:,np.newaxis], newy), axis=2)
-        arr = X_labelled
-        idx = np.argsort(arr[...,0], axis=1)
-        arr1 = np.take_along_axis(arr, idx[...,None], axis=1)
-        res = arr1[:, 0:self.k,1]
-        y_hat = np.count_nonzero( res, axis=1 )
-        y_hat[ y_hat < self.k/2 ] = 0
-        y_hat[ y_hat > self.k/2 ] = 1
-        """
-    
+        
         return y_hat
     
     def minkowski_dist(self,X_new,p):
@@ -76,29 +67,15 @@ class KNN:
         OUTPUT :
         - dst : is an MxN numpy array containing the distance of each point in X_new to X
         '''
-
-        # X_new sono N validation (x1,x2)
-        # self.X sono i miei training 
-        # ( (X_new_1 - X_1) ^p + (X_new2 - X_2)^p ) ^ (1/p)
-
-        #dst = ((X_new - self.X)**p)**(1/p)
-
-        # reshape( X_new, )
+        # Reshaping X adding a 3 dimension in order to use broadcasting [NxDx1]
+        X_3d = self.X[:, :, np.newaxis]                                     # [N x D x 1]
         
-        X_3d = self.X[:, :, np.newaxis]
-    #    X_3d = np.reshape(X_3d, (1,2,2800) ) #hardcodato pazienza
-        #print(X_3d.shape)
+        # Reshaping X_new adding a 3 dimension and repeating the data in this dimension
+        X_new_3d =  np.transpose(X_new)[np.newaxis, :, :]                   # [1 X D X M]
 
-        X_new_3d =  np.transpose(X_new)[np.newaxis, :, :] #[X_new[:,0],X_new[0,:] np.newaxis]  #X_new.repeat(X.shape[0], axis=2)    
-        X_new_3d = X_new_3d.repeat( self.X.shape[0], axis=0 )
-        #print(X_new_3d.shape)
+        # Calculating the distance matrix using the minkowski formula with parameter p
+        dst =  (( (np.abs(X_new_3d - X_3d)**p).sum(axis=1) ) ** (1/p)).T    # [M X N]
+        # [1 X D X M] - [N x D x 1] = [N x D x M]
+        # [N x D x M].sum(axis=1) = [N x M] -> .t -> [M x N]
 
-
-        c = X_new_3d + X_3d
-        
-        dst =  (( (np.abs(X_new_3d - X_3d)**p).sum(axis=1) ) ** (1/p)).T
-        #print(mink)
-        #print(mink.shape)
-
-    
         return dst
