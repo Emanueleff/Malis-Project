@@ -27,6 +27,7 @@ class Perceptron:
         while True:
             m = 0
 
+            """
             for i in range (0, self.X.shape[0]):
                 if( np.dot(self.X[i,:], self.weights)*self.y[i] <= 0 ):
                     self.weights = self.weights + (alpha)*self.X[i,:].T*self.y[i]
@@ -34,13 +35,21 @@ class Perceptron:
             
             if (m==0):
                 return
+            """
 
+            result = np.dot(self.X, self.weights)*self.y
+            index = np.where(result <= 0)[0]
+
+            if(index.size == 0):
+                return
+            
+            self.weights = self.weights + (alpha)*np.sum(self.X[index,:].T*self.y[index], axis=1)
+            
         
-        
-    def predict(self, X_test, y_test):
+    def predict(self, X_test):
         
         X_test = PolynomialFeatures(1).fit_transform(X_test)
-        y_hat = np.sign(np.dot(X_test, self.weights))
+        y_hat = np.sign(np.dot(X_test, self.weights)).astype(int)
         
         return y_hat
     
