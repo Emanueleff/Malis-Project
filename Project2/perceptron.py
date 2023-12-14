@@ -23,7 +23,7 @@ class Perceptron:
     def train(self, X, y, initial_weights=None):
 
         '''
-        Initializes the parameters so that the have the same dimensions as the input data + 1
+        Initializes the parameters so that they have the same dimensions as the input data + 1
         Inputs:
         X - input data matrix of dimensions N x D => Reshapes the input data so that it can handle w_0, dim: N x (D+1)
         y - assign the label of the training set
@@ -54,15 +54,24 @@ class Perceptron:
                 return
             """
 
-            #Optimized version without using the for
+            #Optimized(?) version without using the for loop
 
             #vector with the assigned hyperplane for each sample (( N x D+1 )@( D+1 x 1)) = (D+1 x 1)
+            
+            
+            
+            
+            
+            #SHUOLDNT BE N x 1?     
+            
+            
+            
             result = np.dot(self.X, self.weights)*self.y
 
             #check which sample has negative value, we take the first field of the tuple returned by np.where
             index = np.where(result <= 0)[0]
 
-            #if it has size 0 we have no error and the optimal hyperplane is found
+            #if it has size 0 we have no error and an optimal hyperplane is found
             if(index.size == 0):
                 return
             
