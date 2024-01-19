@@ -52,19 +52,12 @@ class Perceptron:
             
             if (m==0):
                 return
+
             """
 
             #Optimized(?) version without using the for loop
 
             #vector with the assigned hyperplane for each sample (( N x D+1 )@( D+1 x 1)) = (D+1 x 1)
-            
-            
-            
-            
-            
-            #SHUOLDNT BE N x 1?     
-            
-            
             
             result = np.dot(self.X, self.weights)*self.y
 
