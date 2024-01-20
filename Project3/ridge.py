@@ -43,7 +43,6 @@ class RidgeRegression:
         - y: Training output data
         """
         self.X = PolynomialFeatures(1).fit_transform(X)
-        #self.X = X
         self.y = y
         I = np.identity(self.X.shape[1])
 
