@@ -42,8 +42,8 @@ class RidgeRegression:
         - X: Training input data
         - y: Training output data
         """
-        #self.X = PolynomialFeatures(1).fit_transform(X)
-        self.X = X
+        self.X = PolynomialFeatures(1).fit_transform(X)
+        #self.X = X
         self.y = y
         I = np.identity(self.X.shape[1])
 
@@ -61,7 +61,7 @@ class RidgeRegression:
         Returns:
         - y_pred: Predicted output values
         """
-        return np.dot(X_test, self.weights)
+        return np.dot(PolynomialFeatures(1).fit_transform(X_test), self.weights)
 
     def MSE(self, y_pred, y_test):
         """
