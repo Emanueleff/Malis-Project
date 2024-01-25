@@ -27,7 +27,7 @@ class RidgeRegression:
     - MSE(y_pred, y_test): Calculate the Mean Squared Error between predicted and actual values
     """
 
-    def __init__(self, l=0):
+    def __init__(self, l=0, normalized = False):
         """
         Initialize the Ridge Regression model with empty list for training input and output data and empty list for model weights
 
@@ -38,6 +38,10 @@ class RidgeRegression:
         self.y = []
         self.weights = []
         self.l = l
+        self.normalized = normalized
+        self.avg_X = 0
+        self.avg_y = 0  
+        self.std = 0   
 
     def embed_bias(self, X):
         """
@@ -47,6 +51,18 @@ class RidgeRegression:
         ones_column = np.ones((X.shape[0], 1))
         X = np.hstack((ones_column, X))
         return X
+    
+    def normalize(self,X,y):
+        """
+        Normalize the dataset.
+
+        """
+        self.avg_X = np.mean(X,axis=0)
+        self.std = np.std(X,axis=0)
+        self.avg_y = np.mean(y)
+        X = (X - self.avg_X)/self.std
+        y = y - self.avg_y
+        return X,y
 
     def train(self, X, y):
         """
@@ -58,6 +74,9 @@ class RidgeRegression:
         """
         if(X.shape[0] == y.shape[0]):
             #Adapt the dataset in order to embed the bias term
+            if self.normalized:
+                X,y = self.normalize(X,y)
+            
             self.X = self.embed_bias(X)
             self.y = y
 
@@ -86,7 +105,10 @@ class RidgeRegression:
             print("The model is not trained yet")
             return
         
-        return np.dot(self.embed_bias(X_test), self.weights)
+        if self.normalized:
+            X_test = (X_test - self.avg_X)/self.std 
+        
+        return (np.dot(self.embed_bias(X_test), self.weights) + self.avg_y*self.normalized)
 
     def MSE(self, y_pred, y_test):
         """
