@@ -11,9 +11,9 @@ class RidgeRegression:
     - l: Regularization parameter (default = 0)
 
     Attributes:
-    - X: Training input data
+    - X: Training input data 
     - y: Training output data
-    - weights: Model weights
+    - weights: Model weights 
     - l: Regularization parameter
 
     Methods:
@@ -24,7 +24,7 @@ class RidgeRegression:
 
     def __init__(self, l=0):
         """
-        Initialize the Ridge Regression model.
+        Initialize the Ridge Regression model with empty list for training input and output data and empty list for model weights
 
         Parameters:
         - l: Regularization parameter (default = 0)
@@ -34,21 +34,37 @@ class RidgeRegression:
         self.weights = []
         self.l = l
 
+    def embed_bias(self, X):
+        """
+        Adds a column of 1s to the front of the input matrix.
+
+        """
+        ones_column = np.ones((X.shape[0], 1))
+        X = np.hstack((ones_column, X))
+        return X
+
     def train(self, X, y):
         """
         Train the Ridge Regression model.
 
         Parameters:
-        - X: Training input data
-        - y: Training output data
+        - X: Training input data with dimension (NxD), then adapted to (Nx(D+1)) in order to embed the bias term
+        - y: Training output data with dimension (Nx1)
         """
-        self.X = PolynomialFeatures(1).fit_transform(X)
-        self.y = y
-        I = np.identity(self.X.shape[1])
+        if(X.shape[0] == y.shape[0]):
+            #Adapt the dataset in order to embed the bias term
+            self.X = self.embed_bias(X)
+            self.y = y
 
-        # Do not regularize the bias term
-        I[0][0] = 0
-        self.weights = np.linalg.inv((self.X.T) @ self.X + self.l * I) @ (self.X.T) @ self.y
+            #Identity matrix for Ridge Regression formula
+            I = np.identity(self.X.shape[1])
+            #Do not regularize the bias term
+            I[0][0] = 0
+
+            #Compute the weigths of dimension ((D+1)x1)
+            self.weights = np.linalg.inv((self.X.T) @ self.X + self.l * I) @ (self.X.T) @ self.y
+        else:
+            print("The number of rows of X and y must be the same")
 
     def predict(self, X_test):
         """
@@ -60,7 +76,12 @@ class RidgeRegression:
         Returns:
         - y_pred: Predicted output values
         """
-        return np.dot(PolynomialFeatures(1).fit_transform(X_test), self.weights)
+        #Before making the prediction the test data are adapted in order to embed the bias term
+        if  len(self.weights) == 0:
+            print("The model is not trained yet")
+            return
+        
+        return np.dot(self.embed_bias(X_test), self.weights)
 
     def MSE(self, y_pred, y_test):
         """
