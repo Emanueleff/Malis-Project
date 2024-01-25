@@ -1,3 +1,8 @@
+"""
+The documentation of the code has been provided by GitHub Copilot, then checked and modified by the authors
+"""
+
+
 from sklearn.preprocessing import PolynomialFeatures
 import pandas as pd
 import numpy as np
