@@ -2,9 +2,6 @@
 DISCLAIMER: A first draft of the documentation of the code has been provided by ChatGPT, then checked and modified by the authors.
 """
 
-
-from sklearn.preprocessing import PolynomialFeatures
-import pandas as pd
 import numpy as np
 
 class RidgeRegression:
