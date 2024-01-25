@@ -1,5 +1,5 @@
 """
-The documentation of the code has been provided by GitHub Copilot, then checked and modified by the authors
+DISCLAIMER: A first draft of the documentation of the code has been provided by ChatGPT, then checked and modified by the authors.
 """
 
 
